@@ -1,0 +1,11 @@
+[31-Oct-2019 11:48:54 Asia/Dhaka] PHP Fatal error:  Cannot use object of type stdClass as array in /home/expressre2ailbd/mother.expressretailbd.com/application/controllers/Administrator/Page.php on line 414
+[31-Oct-2019 11:49:08 Asia/Dhaka] PHP Fatal error:  Cannot use object of type stdClass as array in /home/expressre2ailbd/mother.expressretailbd.com/application/controllers/Administrator/Page.php on line 414
+[31-Oct-2019 11:49:37 Asia/Dhaka] PHP Fatal error:  Cannot use object of type stdClass as array in /home/expressre2ailbd/mother.expressretailbd.com/application/controllers/Administrator/Page.php on line 414
+[04-Jun-2020 10:50:41 Asia/Dhaka] PHP Fatal error:  Call to a member function num_rows() on boolean in /home/nafgrou1p/public_html/application/controllers/Administrator/Page.php on line 191
+[04-Jun-2020 10:51:22 Asia/Dhaka] PHP Fatal error:  Call to a member function num_rows() on boolean in /home/nafgrou1p/public_html/application/controllers/Administrator/Page.php on line 191
+[29-Jun-2020 10:16:23 Asia/Dhaka] PHP Fatal error:  Call to a member function num_rows() on boolean in /home/nafgrou1p/public_html/application/controllers/Administrator/Page.php on line 191
+[29-Jun-2020 10:16:31 Asia/Dhaka] PHP Fatal error:  Call to a member function num_rows() on boolean in /home/nafgrou1p/public_html/application/controllers/Administrator/Page.php on line 191
+[29-Jun-2020 10:16:32 Asia/Dhaka] PHP Fatal error:  Call to a member function num_rows() on boolean in /home/nafgrou1p/public_html/application/controllers/Administrator/Page.php on line 191
+[29-Jun-2020 10:16:34 Asia/Dhaka] PHP Fatal error:  Call to a member function num_rows() on boolean in /home/nafgrou1p/public_html/application/controllers/Administrator/Page.php on line 191
+[29-Jun-2020 10:16:35 Asia/Dhaka] PHP Fatal error:  Call to a member function num_rows() on boolean in /home/nafgrou1p/public_html/application/controllers/Administrator/Page.php on line 191
+[29-Jun-2020 10:17:09 Asia/Dhaka] PHP Fatal error:  Call to a member function num_rows() on boolean in /home/nafgrou1p/public_html/application/controllers/Administrator/Page.php on line 191
