@@ -215,6 +215,18 @@ class Model_Table extends CI_Model{
 
         return $code;
     }
+    public function generateExchangeCode(){
+        $code = "EX0001";
+        
+        $lastExchange = $this->db->query("select * from tbl_salesexchange order by Exchange_SlNo desc limit 1");
+        if($lastExchange->num_rows() != 0){
+            $newExchangeCode = $lastExchange->row()->Exchange_SlNo + 1;
+            $zeros = array('0', '00', '000');
+            $code = 'EX' . (strlen($newExchangeCode) > count($zeros) ? $newExchangeCode : $zeros[count($zeros) - strlen($newExchangeCode)] . $newExchangeCode);
+        }
+
+        return $code;
+    }
 
     public function generateAccountCode(){
         $code = "A0001";

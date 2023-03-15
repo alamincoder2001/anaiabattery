@@ -263,6 +263,18 @@ $route['get_saledetails_for_return'] = 'Administrator/Sales/getSaleDetailsForRet
 $route['add_sales_return']           = 'Administrator/Sales/addSalesReturn';
 $route['get_sale_return_details']    = 'Administrator/Sales/getSaleReturnDetails';
 
+// sales exchange
+$route['exchangeEntry']         = 'Administrator/Sales/exchange_entry';
+$route['add_exchange']          = 'Administrator/Sales/addExchange';
+$route['update_exchange']       = 'Administrator/Sales/updateExchange';
+$route['delete_exchange']       = 'Administrator/Sales/deleteExchange';
+$route['get_exchanges']         = 'Administrator/Sales/getExchanges';
+
+// serial history
+$route['serial_history'] = 'Administrator/Sales/serialHistory';
+$route['get_serial_list'] = 'Administrator/Sales/serialList';
+$route['get_serial_report'] = 'Administrator/Sales/getSerialReport';
+
 
 $route['sale_invoice_print/(:any)'] = 'Administrator/Sales/saleInvoicePrint/$1';
 $route['serviceInvoicePrint/(:any)'] = 'Administrator/Services/serviceInvoicePrint/$1';

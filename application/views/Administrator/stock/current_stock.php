@@ -247,6 +247,7 @@
 							<th>Purchase Returned Quantity</th>
 							<th>Sold Quantity</th>
 							<th>Sales Returned Quantity</th>
+							<th>Damage Quantity</th>
 							<th>Current Quantity</th>
 							<th>Stock Value</th>
 						</tr>
@@ -260,6 +261,7 @@
 							<td>{{ product.purchase_returned_quantity }}</td>
 							<td>{{ product.sold_quantity }}</td>
 							<td>{{ product.sales_returned_quantity }}</td>
+							<td>{{ product.damaged_quantity }}</td>
 							<td>{{ product.current_quantity }} {{ product.Unit_Name }}</td>
 							<td>{{ product.stock_value }}</td>
 
@@ -267,7 +269,7 @@
 					</tbody>
 					<tfoot>
 						<tr>
-							<td colspan="7" style="text-align:right;">Total Stock Value</td>
+							<td colspan="8" style="text-align:right;">Total Stock Value</td>
 							<td>{{ current_quantity }}</td>
 							<td>{{ stock.reduce((acc, pre) => {return acc + +pre.stock_value}, 0).toFixed(2) }}</td>
 						</tr>

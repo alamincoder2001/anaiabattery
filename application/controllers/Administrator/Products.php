@@ -469,7 +469,12 @@ class Products extends CI_Controller {
                         from tbl_damagedetails dmd
                         join tbl_damage dm on dm.Damage_SlNo = dmd.Damage_SlNo
                         where dmd.Product_SlNo = p.Product_SlNo
-                        and dm.Damage_brunchid = '$branchId') as damaged_quantity,
+                        and dm.Damage_brunchid = '$branchId') as dam_quantity,
+
+                (select ifnull(sum(texc.Exchange_Quantity), 0)
+                        from tbl_salesexchange texc
+                        where texc.Product_SlNo = p.Product_SlNo
+                        and texc.Exchange_brunchId = '$branchId') as exchange_quantity,
             
                 (select ifnull(sum(trd.quantity), 0)
                         from tbl_transferdetails trd
@@ -482,7 +487,8 @@ class Products extends CI_Controller {
                         join tbl_transfermaster tm on tm.transfer_id = trd.transfer_id
                         where trd.product_id = p.Product_SlNo
                         and tm.transfer_to = '$branchId') as transfered_to_quantity,
-                        
+                
+                (select (dam_quantity+exchange_quantity)) as damaged_quantity,
                 (select (purchased_quantity + sales_returned_quantity + transfered_to_quantity) - (sold_quantity + purchase_returned_quantity + damaged_quantity + transfered_from_quantity)) as current_quantity,
                 (select p.Product_Purchase_Rate * current_quantity) as stock_value
                 , (select sum(purchase_total) as purchase_total from  tbl_product_serial_numbers where ps_prod_id=p.Product_SlNo AND ps_p_r_status<>'yes' AND ps_brunch_id='".$branchId."'  AND   (ps_s_status IS NULL OR ps_s_status<>'yes'   OR ps_s_r_status='yes') ) as purchase_total_am 

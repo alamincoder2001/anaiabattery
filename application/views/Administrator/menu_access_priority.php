@@ -77,6 +77,7 @@
                     <li><input type="checkbox" class="access" value="price_list" v-model="access"> Product Price List</li>
                     <li><input type="checkbox" class="access" value="quotation_invoice_report" v-model="access"> Quotation Invoice</li>
                     <li><input type="checkbox" class="access" value="quotation_record" v-model="access"> Quotation Record</li>
+                    <li><input type="checkbox" class="access" value="exchangeEntry" v-model="access"> Product Exchange</li>
                 </ul>
             </div>
 

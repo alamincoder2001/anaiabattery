@@ -2083,4 +2083,207 @@ class Sales extends CI_Controller
 
         echo json_encode($res);
     }
+
+    // exchange entry
+    public function exchange_entry()
+    {
+        $access = $this->mt->userAccess();
+        if (!$access) {
+            redirect(base_url());
+        }
+        $data['title'] = "Exchange Entry";
+        $data['exchangeCode'] = $this->mt->generateExchangeCode();
+        $data['content'] = $this->load->view('Administrator/sales/exchange_entry', $data, TRUE);
+        $this->load->view('Administrator/index', $data);
+    }
+
+    public function getExchanges()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+
+        $clauses = "";
+        if (isset($data->exchangeId) && $data->exchangeId != '') {
+            $clauses .= " and d.Product_SlNo = '$data->exchangeId'";
+        }
+        $exchanges = $this->db->query("
+                        SELECT
+                        ex.*, p.*
+                    FROM tbl_salesexchange ex
+                    LEFT JOIN tbl_product p ON p.Product_SlNo = ex.Product_SlNo
+                    WHERE ex.Status = 'a' $clauses")->result();
+
+        echo json_encode($exchanges);
+    }
+
+    function addExchange()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+
+            $exchange = array(
+                'Exchange_Code'        => $data->Exchange_Code,
+                'Exchange_Date'        => $data->Exchange_Date,
+                'Product_SlNo'         => $data->Product_SlNo,
+                'Exchange_Quantity'    => $data->Exchange_Quantity,
+                'Exchange_Description' => $data->Exchange_Description,
+                'Status'               => 'a',
+                'AddBy'                => $this->session->userdata("FullName"),
+                'AddTime'              => date('Y-m-d H:i:s'),
+                'Exchange_brunchId'    => $this->session->userdata('BRANCHid')
+            );
+
+            $this->db->insert('tbl_salesexchange', $exchange);
+
+            $this->db->query("
+                update tbl_currentinventory ci 
+                set ci.damage_quantity = ci.damage_quantity + ? 
+                where product_id = ? 
+                and ci.branch_id = ?
+            ", [$data->Exchange_Quantity, $data->Product_SlNo, $this->session->userdata('BRANCHid')]);
+
+            $res = ['success' => true, 'message' => 'Exchange entry success', 'newCode' => $this->mt->generateExchangeCode()];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+
+    public function updateExchange()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+            $exchangeId = $data->Exchange_SlNo;
+            //update current inventory
+            $oldProduct = $this->db->query("select * from tbl_salesexchange where Exchange_SlNo = ?", $exchangeId)->row();
+            $this->db->query("
+                update tbl_currentinventory ci 
+                set ci.damage_quantity = ci.damage_quantity - ? 
+                where product_id = ? 
+                and ci.branch_id = ?
+            ", [$oldProduct->Exchange_Quantity, $oldProduct->Product_SlNo, $this->session->userdata('BRANCHid')]);
+
+            $exchange = array(
+                'Exchange_Code'        => $data->Exchange_Code,
+                'Exchange_Date'        => $data->Exchange_Date,
+                'Product_SlNo'         => $data->Product_SlNo,
+                'Exchange_Quantity'    => $data->Exchange_Quantity,
+                'Exchange_Description' => $data->Exchange_Description,
+                'UpdateBy'             => $this->session->userdata("FullName"),
+                'UpdateTime'           => date('Y-m-d H:i:s')
+            );
+
+            $this->db->where('Exchange_SlNo', $exchangeId)->update('tbl_salesexchange', $exchange);
+
+            $this->db->query("
+                update tbl_currentinventory ci 
+                set ci.damage_quantity = ci.damage_quantity + ? 
+                where product_id = ? 
+                and ci.branch_id = ?
+            ", [$data->Exchange_Quantity, $data->Product_SlNo, $this->session->userdata('BRANCHid')]);
+
+            $res = ['success' => true, 'message' => 'Exchange updated successfully', 'newCode' => $this->mt->generateExchangeCode()];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+
+    public function deleteExchange()
+    {
+        $res = ['success' => false, 'message' => ''];
+        try {
+            $data = json_decode($this->input->raw_input_stream);
+            $exchangeId = $data->exchangeId;
+
+            $oldProduct = $this->db->query("select * from tbl_salesexchange where Exchange_SlNo = ?", $exchangeId)->row();
+            $this->db->query("
+                update tbl_currentinventory ci 
+                set ci.damage_quantity = ci.damage_quantity - ? 
+                where product_id = ? 
+                and ci.branch_id = ?
+            ", [$oldProduct->Exchange_Quantity, $oldProduct->Product_SlNo, $this->session->userdata('BRANCHid')]);
+
+            $this->db->where('Exchange_SlNo', $exchangeId)->update('tbl_salesexchange', ['Status' => 'd']);
+
+            $res = ['success' => true, 'message' => 'Exchange deleted successfully', 'newCode' => $this->mt->generateExchangeCode()];
+        } catch (Exception $ex) {
+            $res = ['success' => false, 'message' => $ex->getMessage()];
+        }
+
+        echo json_encode($res);
+    }
+
+    // serial history
+    public function serialHistory()
+    {
+        $access = $this->mt->userAccess();
+        if (!$access) {
+            redirect(base_url());
+        }
+        $data['title'] = "Serial History";
+        $data['content'] = $this->load->view('Administrator/sales/serial_history', $data, TRUE);
+        $this->load->view('Administrator/index', $data);
+    }
+
+    public function serialList()
+    {
+        $serialList =   $this->db->query("
+            select * from tbl_batch where branch_id = ?
+            ", [$this->session->userdata('BRANCHid')])->result();
+        echo json_encode($serialList);
+    }
+
+    public function getSerialReport()
+    {
+        $data = json_decode($this->input->raw_input_stream);
+        $res['saleReport'] =  $this->db->query("
+                SELECT
+                bn.*,
+                sd.SaleMaster_IDNo,
+                sd.SaleDetails_SlNo,
+                sm.SaleMaster_InvoiceNo AS invoiceNo,
+                sm.SaleMaster_SaleDate AS purchaseDate,
+                sm.SaleMaster_branchid,
+                c.Customer_Name,
+                c.Customer_Code,
+                c.Customer_Mobile,
+                p.Product_Name,
+                b.Brunch_name
+            FROM tbl_batch bn
+            LEFT JOIN tbl_saledetails sd ON sd.Batch_Id = bn.id
+            LEFT JOIN tbl_salesmaster sm ON sm.SaleMaster_SlNo = sd.SaleMaster_IDNo
+            LEFT JOIN tbl_customer c ON c.Customer_SlNo = sm.SalseCustomer_IDNo
+            LEFT JOIN tbl_product p ON p.Product_SlNo = sd.Product_IDNo
+            LEFT JOIN tbl_brunch b ON b.brunch_id = bn.branch_id
+            WHERE bn.id = ?
+        ", $data->serial)->result();
+
+        $res['purchaseReport'] =  $this->db->query("
+            SELECT
+            bn.*,
+            pd.PurchaseMaster_IDNo,
+            pd.PurchaseDetails_SlNo,
+            pm.PurchaseMaster_InvoiceNo AS invoiceNo,
+            pm.PurchaseMaster_OrderDate AS purchaseDate,
+            pm.PurchaseMaster_BranchID,
+            s.Supplier_Name,
+            s.Supplier_Code,
+            s.Supplier_Mobile,
+            p.Product_Name,
+            b.Brunch_name
+        FROM tbl_batch bn
+        LEFT JOIN tbl_purchasedetails pd ON pd.Batch_Id = bn.id
+        LEFT JOIN tbl_purchasemaster pm ON pm.PurchaseMaster_SlNo = pd.PurchaseMaster_IDNo
+        LEFT JOIN tbl_supplier s ON s.Supplier_SlNo = pm.Supplier_SlNo
+        LEFT JOIN tbl_product p ON p.Product_SlNo = pd.Product_IDNo
+        LEFT JOIN tbl_brunch b ON b.brunch_id = bn.branch_id
+        WHERE bn.id = ? 
+        ", $data->serial)->result();
+
+        echo json_encode($res);
+    }
 }

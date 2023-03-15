@@ -336,7 +336,7 @@ class Purchase extends CI_Controller
         $data['damageCode'] = $this->mt->generateDamageCode();
         $data['content'] = $this->load->view('Administrator/purchase/damage_entry', $data, TRUE);
         $this->load->view('Administrator/index', $data);
-    }
+    } 
 
     public function stock()
     {

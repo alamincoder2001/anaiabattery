@@ -449,6 +449,20 @@ if ($module == 'dashboard' or $module == '') { ?>
 						</div>
 					</div>
 				<?php endif; ?>
+				<?php if (array_search("exchangeEntry", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
+					<div class="col-md-2 ">
+						<div class="col-md-12 section20">
+							<a href="<?php echo base_url(); ?>exchangeEntry">
+								<div class="logo">
+									<i class="menu-icon fa fa-retweet"></i>
+								</div>
+								<div class="textModule">
+									Product Exchange
+								</div>
+							</a>
+						</div>
+					</div>
+				<?php endif; ?>
 				<?php if (array_search("quotation", $access) > -1 || isset($CheckSuperAdmin) || isset($CheckAdmin)) : ?>
 					<div class="col-md-2 ">
 						<div class="col-md-12 section20">
