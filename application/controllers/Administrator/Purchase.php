@@ -554,8 +554,11 @@ class Purchase extends CI_Controller
     {
         $res = ['success' => false, 'message' => ''];
         try {
+            $this->db->trans_begin();
             $data = json_decode($this->input->raw_input_stream);
             $purchaseId = $data->purchase->purchaseId;
+            // echo json_encode($data);
+            // exit;
 
             if (isset($data->supplier)) {
                 $supplier = (array)$data->supplier;
@@ -607,16 +610,17 @@ class Purchase extends CI_Controller
             foreach ($data->cartProducts as $product) {
 
                 $purchaseDetails = array(
-                    'PurchaseMaster_IDNo' => $purchaseId,
-                    'Product_IDNo' => $product->productId,
+                    'PurchaseMaster_IDNo'           => $purchaseId,
+                    'Product_IDNo'                  => $product->productId,
+                    'Batch_Id'                      => $product->Batch_Id,
                     'PurchaseDetails_TotalQuantity' => $product->quantity,
-                    'PurchaseDetails_Rate' => $product->purchaseRate,
-                    'PurchaseDetails_TotalAmount' => $product->total,
-                    'Status' => 'a',
-                    'UpdateBy' => $this->session->userdata("FullName"),
-                    'UpdateTime' => date('Y-m-d H:i:s'),
-                    'PurchaseDetails_branchID' => $this->session->userdata('BRANCHid'),
-                    'PurchaseDetails_Discount' => $product->discount
+                    'PurchaseDetails_Rate'          => $product->purchaseRate,
+                    'PurchaseDetails_TotalAmount'   => $product->total,
+                    'Status'                        => 'a',
+                    'AddBy'                         => $this->session->userdata("FullName"),
+                    'AddTime'                       => date('Y-m-d H:i:s'),
+                    'PurchaseDetails_branchID'      => $this->session->userdata('BRANCHid'),
+                    'PurchaseDetails_Discount'      => $product->discount
                 );
                 $this->db->insert('tbl_purchasedetails', $purchaseDetails);
 
@@ -639,8 +643,10 @@ class Purchase extends CI_Controller
                 }
             }
 
+            $this->db->trans_commit();
             $res = ['success' => true, 'message' => 'Purchase Success', 'purchaseId' => $purchaseId];
         } catch (Exception $ex) {
+            $this->db->trans_rollback();
             $res = ['success' => false, 'message' => $ex->getMessage()];
         }
 
