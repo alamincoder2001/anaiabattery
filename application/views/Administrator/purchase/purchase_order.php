@@ -337,7 +337,7 @@
 											<div class="form-group">
 												<label class="col-xs-12 control-label no-padding-right">Paid</label>
 												<div class="col-xs-12">
-													<input type="number" id="paid" class="form-control" v-model="purchase.paid" :input='calculateTotal' v-bind:disabled="selectedSupplier.Supplier_Type == 'G' ? true : false" />
+													<input type="number" id="paid" class="form-control" v-model="purchase.paid" @input='calculateTotal' v-bind:disabled="selectedSupplier.Supplier_Type == 'G' ? true : false" />
 												</div>
 											</div>
 										</td>
@@ -492,6 +492,9 @@
 				})
 			},
 			onChangeSupplier() {
+				if(this.selectedSupplier.Supplier_SlNo == null){
+					return
+				}
 				if (this.purchase.purchaseId != 0 && this.oldSupplierId != parseInt(this.selectedSupplier.Supplier_SlNo)) {
 					let changeConfirm = confirm('Changing supplier will set previous due to current due amount. Do you really want to change supplier?');
 					if (changeConfirm == false) {
