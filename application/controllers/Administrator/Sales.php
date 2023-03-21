@@ -2107,9 +2107,13 @@ class Sales extends CI_Controller
         }
         $exchanges = $this->db->query("
                         SELECT
-                        ex.*, p.*
+                        ex.*, p.*,
+                        c.Customer_Code,
+                        c.Customer_Name,
+                        concat(c.Customer_Code, ' - ', c.Customer_Name, ' - ', c.owner_name) as display_name
                     FROM tbl_salesexchange ex
                     LEFT JOIN tbl_product p ON p.Product_SlNo = ex.Product_SlNo
+                    LEFT JOIN tbl_customer c ON c.Customer_SlNo = ex.CustomerID
                     WHERE ex.Status = 'a' $clauses")->result();
 
         echo json_encode($exchanges);
@@ -2124,6 +2128,7 @@ class Sales extends CI_Controller
             $exchange = array(
                 'Exchange_Code'        => $data->Exchange_Code,
                 'Exchange_Date'        => $data->Exchange_Date,
+                'CustomerID'           => $data->CustomerID,
                 'Product_SlNo'         => $data->Product_SlNo,
                 'Exchange_Quantity'    => $data->Exchange_Quantity,
                 'Exchange_Description' => $data->Exchange_Description,
@@ -2168,6 +2173,7 @@ class Sales extends CI_Controller
             $exchange = array(
                 'Exchange_Code'        => $data->Exchange_Code,
                 'Exchange_Date'        => $data->Exchange_Date,
+                'CustomerID'           => $data->CustomerID,
                 'Product_SlNo'         => $data->Product_SlNo,
                 'Exchange_Quantity'    => $data->Exchange_Quantity,
                 'Exchange_Description' => $data->Exchange_Description,
