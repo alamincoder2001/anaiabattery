@@ -6,10 +6,10 @@ $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
 	
+// 	'username' => 'root',
+// 	'password' => '',
 	'username' => 'root',
 	'password' => '',
-	// 'username' => 'bigektuw_anaiabatteryltd',
-	// 'password' => 'q3{WIxxSn[&v',
 	'database' => 'bigektuw_anaiabatteryltd',
 		
 
