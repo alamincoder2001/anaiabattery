@@ -463,13 +463,13 @@ class Products extends CI_Controller {
                 (select ifnull(sum(srd.SaleReturnDetails_ReturnQuantity), 0)
                         from tbl_salereturndetails srd 
                         where srd.SaleReturnDetailsProduct_SlNo = p.Product_SlNo
-                        and srd.SaleReturnDetails_brunchID = '$branchId') as sales_returned_quantity,
+                        and srd.SaleReturnDetails_brunchID = '$branchId') as sales_returned_quantitys,
                         
                 (select ifnull(sum(dmd.DamageDetails_DamageQuantity), 0) 
                         from tbl_damagedetails dmd
                         join tbl_damage dm on dm.Damage_SlNo = dmd.Damage_SlNo
                         where dmd.Product_SlNo = p.Product_SlNo
-                        and dm.Damage_brunchid = '$branchId') as dam_quantity,
+                        and dm.Damage_brunchid = '$branchId') as damaged_quantity,
 
                 (select ifnull(sum(texc.Exchange_Quantity), 0)
                         from tbl_salesexchange texc
@@ -488,7 +488,7 @@ class Products extends CI_Controller {
                         where trd.product_id = p.Product_SlNo
                         and tm.transfer_to = '$branchId') as transfered_to_quantity,
                 
-                (select (dam_quantity+exchange_quantity)) as damaged_quantity,
+                (select (sales_returned_quantitys+exchange_quantity)) as sales_returned_quantity,
                 (select (purchased_quantity + sales_returned_quantity + transfered_to_quantity) - (sold_quantity + purchase_returned_quantity + damaged_quantity + transfered_from_quantity)) as current_quantity,
                 (select p.Product_Purchase_Rate * current_quantity) as stock_value
                 , (select sum(purchase_total) as purchase_total from  tbl_product_serial_numbers where ps_prod_id=p.Product_SlNo AND ps_p_r_status<>'yes' AND ps_brunch_id='".$branchId."'  AND   (ps_s_status IS NULL OR ps_s_status<>'yes'   OR ps_s_r_status='yes') ) as purchase_total_am 

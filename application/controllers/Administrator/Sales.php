@@ -2142,7 +2142,7 @@ class Sales extends CI_Controller
 
             $this->db->query("
                 update tbl_currentinventory ci 
-                set ci.damage_quantity = ci.damage_quantity + ? 
+                set ci.sales_return_quantity = ci.sales_return_quantity + ? 
                 where product_id = ? 
                 and ci.branch_id = ?
             ", [$data->Exchange_Quantity, $data->Product_SlNo, $this->session->userdata('BRANCHid')]);
@@ -2165,7 +2165,7 @@ class Sales extends CI_Controller
             $oldProduct = $this->db->query("select * from tbl_salesexchange where Exchange_SlNo = ?", $exchangeId)->row();
             $this->db->query("
                 update tbl_currentinventory ci 
-                set ci.damage_quantity = ci.damage_quantity - ? 
+                set ci.sales_return_quantity = ci.sales_return_quantity - ? 
                 where product_id = ? 
                 and ci.branch_id = ?
             ", [$oldProduct->Exchange_Quantity, $oldProduct->Product_SlNo, $this->session->userdata('BRANCHid')]);
@@ -2185,7 +2185,7 @@ class Sales extends CI_Controller
 
             $this->db->query("
                 update tbl_currentinventory ci 
-                set ci.damage_quantity = ci.damage_quantity + ? 
+                set ci.sales_return_quantity = ci.sales_return_quantity + ? 
                 where product_id = ? 
                 and ci.branch_id = ?
             ", [$data->Exchange_Quantity, $data->Product_SlNo, $this->session->userdata('BRANCHid')]);
@@ -2208,7 +2208,7 @@ class Sales extends CI_Controller
             $oldProduct = $this->db->query("select * from tbl_salesexchange where Exchange_SlNo = ?", $exchangeId)->row();
             $this->db->query("
                 update tbl_currentinventory ci 
-                set ci.damage_quantity = ci.damage_quantity - ? 
+                set ci.sales_return_quantity = ci.sales_return_quantity - ? 
                 where product_id = ? 
                 and ci.branch_id = ?
             ", [$oldProduct->Exchange_Quantity, $oldProduct->Product_SlNo, $this->session->userdata('BRANCHid')]);
