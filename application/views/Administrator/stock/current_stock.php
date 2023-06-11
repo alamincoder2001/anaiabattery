@@ -248,6 +248,8 @@
 							<th>Sold Quantity</th>
 							<th>Sales Returned Quantity</th>
 							<th>Damage Quantity</th>
+							<th>ExchangeIn Quantity</th>
+							<th>ExchangeOut Quantity</th>
 							<th>Current Quantity</th>
 							<th>Stock Value</th>
 						</tr>
@@ -262,6 +264,8 @@
 							<td>{{ product.sold_quantity }}</td>
 							<td>{{ product.sales_returned_quantity }}</td>
 							<td>{{ product.damaged_quantity }}</td>
+							<td>{{ product.exchange_in_quantity }}</td>
+							<td>{{ product.exchange_out_quantity }}</td>
 							<td>{{ product.current_quantity }} {{ product.Unit_Name }}</td>
 							<td>{{ product.stock_value }}</td>
 
@@ -269,7 +273,7 @@
 					</tbody>
 					<tfoot>
 						<tr>
-							<td colspan="8" style="text-align:right;">Total Stock Value</td>
+							<td colspan="10" style="text-align:right;">Total Stock Value</td>
 							<td>{{ current_quantity }}</td>
 							<td>{{ stock.reduce((acc, pre) => {return acc + +pre.stock_value}, 0).toFixed(2) }}</td>
 						</tr>

@@ -157,6 +157,34 @@ class Products extends CI_Controller {
             join tbl_damage d on d.Damage_SlNo = dmd.Damage_SlNo
             where dmd.Product_SlNo = " . $data->productId . "
             and d.Damage_brunchid = " . $this->brunch . "
+           
+            UNION
+            select 
+                'h' as sequence,
+                texc.Exchange_SlNo as id,
+                texc.Exchange_Date as date,
+                concat('In Exchange Qty - ', texc.Exchange_Description) as description,
+                0 as rate,
+                texc.Received_Quantity as in_quantity,
+                0 as out_quantity,
+                '' as reference
+            from tbl_salesexchange texc
+            where texc.receivedProduct = " . $data->productId . "
+            and texc.Exchange_brunchId = " . $this->brunch . "
+
+            UNION
+            select 
+                'i' as sequence,
+                texc.Exchange_SlNo as id,
+                texc.Exchange_Date as date,
+                concat('Out Exchange Qty - ', texc.Exchange_Description) as description,
+                0 as rate,
+                0 as in_quantity,
+                texc.Exchange_Quantity as out_quantity,
+                '' as reference
+            from tbl_salesexchange texc
+            where texc.exchangeProduct = " . $data->productId . "
+            and texc.Exchange_brunchId = " . $this->brunch . "
 
             order by date, sequence, id
         ")->result();
@@ -383,7 +411,7 @@ class Products extends CI_Controller {
             select * from(
                 select
                     ci.*,
-                    (select (ci.purchase_quantity + ci.sales_return_quantity + ci.transfer_to_quantity) - (ci.sales_quantity + ci.purchase_return_quantity + ci.damage_quantity + ci.transfer_from_quantity)) as current_quantity,
+                    (select (ci.purchase_quantity + ci.sales_return_quantity + ci.transfer_to_quantity + ci.exchange_in_quantity) - (ci.sales_quantity + ci.purchase_return_quantity + ci.damage_quantity + ci.transfer_from_quantity + ci.exchange_out_quantity)) as current_quantity,
                     p.Product_Name,
                     p.Product_Code,
                     p.Product_ReOrederLevel,
@@ -463,7 +491,7 @@ class Products extends CI_Controller {
                 (select ifnull(sum(srd.SaleReturnDetails_ReturnQuantity), 0)
                         from tbl_salereturndetails srd 
                         where srd.SaleReturnDetailsProduct_SlNo = p.Product_SlNo
-                        and srd.SaleReturnDetails_brunchID = '$branchId') as sales_returned_quantitys,
+                        and srd.SaleReturnDetails_brunchID = '$branchId') as sales_returned_quantity,
                         
                 (select ifnull(sum(dmd.DamageDetails_DamageQuantity), 0) 
                         from tbl_damagedetails dmd
@@ -471,10 +499,15 @@ class Products extends CI_Controller {
                         where dmd.Product_SlNo = p.Product_SlNo
                         and dm.Damage_brunchid = '$branchId') as damaged_quantity,
 
+                (select ifnull(sum(texc.Received_Quantity), 0)
+                        from tbl_salesexchange texc
+                        where texc.receivedProduct = p.Product_SlNo
+                        and texc.Exchange_brunchId = '$branchId') as exchange_in_quantity,
+
                 (select ifnull(sum(texc.Exchange_Quantity), 0)
                         from tbl_salesexchange texc
-                        where texc.Product_SlNo = p.Product_SlNo
-                        and texc.Exchange_brunchId = '$branchId') as exchange_quantity,
+                        where texc.exchangeProduct = p.Product_SlNo
+                        and texc.Exchange_brunchId = '$branchId') as exchange_out_quantity,
             
                 (select ifnull(sum(trd.quantity), 0)
                         from tbl_transferdetails trd
@@ -488,8 +521,7 @@ class Products extends CI_Controller {
                         where trd.product_id = p.Product_SlNo
                         and tm.transfer_to = '$branchId') as transfered_to_quantity,
                 
-                (select (sales_returned_quantitys+exchange_quantity)) as sales_returned_quantity,
-                (select (purchased_quantity + sales_returned_quantity + transfered_to_quantity) - (sold_quantity + purchase_returned_quantity + damaged_quantity + transfered_from_quantity)) as current_quantity,
+                (select (purchased_quantity + sales_returned_quantity + transfered_to_quantity + exchange_in_quantity) - (sold_quantity + purchase_returned_quantity + damaged_quantity + transfered_from_quantity + exchange_out_quantity)) as current_quantity,
                 (select p.Product_Purchase_Rate * current_quantity) as stock_value
                 , (select sum(purchase_total) as purchase_total from  tbl_product_serial_numbers where ps_prod_id=p.Product_SlNo AND ps_p_r_status<>'yes' AND ps_brunch_id='".$branchId."'  AND   (ps_s_status IS NULL OR ps_s_status<>'yes'   OR ps_s_r_status='yes') ) as purchase_total_am 
             from tbl_product p

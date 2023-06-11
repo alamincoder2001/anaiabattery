@@ -63,47 +63,38 @@
 	<div class="col-xs-12 col-md-12 col-lg-12" style="border-bottom:1px #ccc solid;margin-bottom:5px;">
 		<div class="row">
 			<div class="form-group">
-				<label class="col-sm-1 control-label no-padding-right"> Invoice no </label>
-				<div class="col-sm-2">
+				<label class="col-md-1 col-xs-4 control-label no-padding-right"> Invoice no </label>
+				<div class="col-md-2 col-xs-8">
 					<input type="text" id="invoiceNo" class="form-control" v-model="sales.invoiceNo" readonly />
 				</div>
 			</div>
 
 			<div class="form-group">
-				<label class="col-sm-1 control-label no-padding-right"> Sales By </label>
-				<div class="col-sm-2">
+				<label class="col-md-1 col-xs-4 control-label no-padding-right"> Sales By </label>
+				<div class="col-md-2 col-xs-8">
 					<v-select v-bind:options="employees" v-model="selectedEmployee" label="Employee_Name" placeholder="Select Employee"></v-select>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<label class="col-sm-1 control-label no-padding-right"> Sales From </label>
-				<div class="col-sm-2">
+				<label class="col-md-1 col-xs-4 control-label no-padding-right"> Sales From </label>
+				<div class="col-md-2 col-xs-8">
 					<v-select id="branchDropdown" v-bind:options="branches" label="Brunch_name" v-model="selectedBranch" disabled></v-select>
 				</div>
 			</div>
 
 			<div class="form-group">
-				<div class="col-sm-3">
+				<div class="col-md-3 col-xs-12">
 					<input class="form-control" type="date" v-model="sales.salesDate" v-bind:disabled="userType == 'u' ? true : false" />
-					<!-- <input type="text" id="datepicker" class="form-control" v-model="sales.salesDate" v-bind:disabled="userType == 'u' ? true : false" /> -->
 				</div>
 			</div>
 		</div>
-		<!-- <div class="row">
-			<div class="form-group">
-				<label class="col-sm-1 control-label no-padding-right"> Bill no </label>
-				<div class="col-sm-2">
-					<input type="text" class="form-control" placeholder="Bill no" v-model="sales.SaleMaster_Bill_no" />
-				</div>
-			</div>
-		</div> -->
 	</div>
 
 
-	<div class="col-md-9">
+	<div class="col-md-9 col-xs-12">
 		<div class="row">
-			<div class="col-12">
+			<div class="col-xs-12">
 				<div class="widget-box ">
 					<div class="widget-header">
 						<h4 class="widget-title">Sales Information</h4>
@@ -121,7 +112,7 @@
 					<div class="widget-body">
 						<div class="widget-main">
 							<div class="row">
-								<div class="col-sm-5">
+								<div class="col-md-5 col-xs-12">
 									<div class="form-group clearfix" style="margin-bottom: 8px;">
 										<label class="col-xs-4 control-label no-padding-right"> Sales Type </label>
 										<div class="col-xs-8">
@@ -160,7 +151,7 @@
 										</div>
 									</div>
 								</div>
-								<div class="col-sm-5">
+								<div class="col-md-5 col-xs-12">
 									<form v-on:submit.prevent="addToCart">
 										<div class="form-group">
 											<label class="col-xs-3 control-label no-padding-right"> Product </label>
@@ -215,7 +206,7 @@
 									</form>
 
 								</div>
-								<div class="col-sm-2">
+								<div class="col-md-2 col-xs-12">
 									<div style="display:none;" v-bind:style="{display:sales.isService == 'true' ? 'none' : ''}">
 										<div class="text-center" style="display:none;" v-bind:style="{color: productStock > 0 ? 'green' : 'red', display: selectedProduct.Product_SlNo == '' ? 'none' : ''}">{{ productStockText }}</div class="text-center">
 
@@ -285,10 +276,10 @@
 		</div>
 
 		<div class="row">
-			<div class="col-12">
+			<div class="col-xs-12 col-md-12">
 				<input type="checkbox" id="isReturn" value="isReturn" v-model="isReturn"> <label for="isReturn">is Return</label>
 			</div>
-			<div class="col-12" style="display: none" :style="{display:isReturn ? '' : 'none'}">
+			<div class="col-xs-12" style="display: none" :style="{display:isReturn ? '' : 'none'}">
 				<div class="widget-box ">
 					<div class="widget-header rhcolor">
 						<h4 class="widget-title">Return Information</h4>
@@ -402,7 +393,7 @@
 		</div>
 	</div>
 
-	<div class="col-md-3">
+	<div class="col-md-3 col-xs-12">
 		<div class="widget-box">
 			<div class="widget-header">
 				<h4 class="widget-title">Amount Details</h4>
@@ -521,8 +512,8 @@
 									<tr>
 										<td>
 											<div class="form-group">
-												<label class="col-sm-12 control-label no-padding-right">Payment Type</label>
-												<div class="col-sm-12">
+												<label class="col-xs-12 control-label no-padding-right">Payment Type</label>
+												<div class="col-xs-12">
 													<select name="payment_type" id="payment_type" v-model="sales.payment_type" class="form-control" style="padding: 1px;">
 														<option value="cash">Cash</option>
 														<option value="bank">Bank</option>
@@ -534,8 +525,8 @@
 									<tr style="display: none;" :style="{display: sales.payment_type == 'bank' ? '' : 'none'}">
 										<td>
 											<div class="form-group">
-												<label class="col-sm-12 control-label no-padding-right">Bank Account</label>
-												<div class="col-sm-12">
+												<label class="col-xs-12 control-label no-padding-right">Bank Account</label>
+												<div class="col-xs-12">
 													<v-select v-bind:options="accounts" v-model="account" label="display_text" placeholder="Select account"></v-select>
 												</div>
 											</div>

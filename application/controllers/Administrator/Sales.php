@@ -2107,12 +2107,16 @@ class Sales extends CI_Controller
         }
         $exchanges = $this->db->query("
                         SELECT
-                        ex.*, p.*,
-                        c.Customer_Code,
+                        ex.*,
+                        rcx.Product_Code as receivedProductCode,
+                        rcx.Product_Name as receivedProductName,
+                        tcx.Product_Code as exchangeProductCode,
+                        tcx.Product_Name as exchangeProductName,
                         c.Customer_Name,
                         concat(c.Customer_Code, ' - ', c.Customer_Name, ' - ', c.owner_name) as display_name
                     FROM tbl_salesexchange ex
-                    LEFT JOIN tbl_product p ON p.Product_SlNo = ex.Product_SlNo
+                    LEFT JOIN tbl_product rcx ON rcx.Product_SlNo = ex.receivedProduct
+                    LEFT JOIN tbl_product tcx ON tcx.Product_SlNo = ex.exchangeProduct
                     LEFT JOIN tbl_customer c ON c.Customer_SlNo = ex.CustomerID
                     WHERE ex.Status = 'a' $clauses")->result();
 
@@ -2129,7 +2133,9 @@ class Sales extends CI_Controller
                 'Exchange_Code'        => $data->Exchange_Code,
                 'Exchange_Date'        => $data->Exchange_Date,
                 'CustomerID'           => $data->CustomerID,
-                'Product_SlNo'         => $data->Product_SlNo,
+                'receivedProduct'      => $data->receivedProduct,
+                'Received_Quantity'    => $data->Received_Quantity,
+                'exchangeProduct'      => $data->exchangeProduct,
                 'Exchange_Quantity'    => $data->Exchange_Quantity,
                 'Exchange_Description' => $data->Exchange_Description,
                 'Status'               => 'a',
@@ -2140,12 +2146,28 @@ class Sales extends CI_Controller
 
             $this->db->insert('tbl_salesexchange', $exchange);
 
-            $this->db->query("
-                update tbl_currentinventory ci 
-                set ci.sales_return_quantity = ci.sales_return_quantity + ? 
-                where product_id = ? 
-                and ci.branch_id = ?
-            ", [$data->Exchange_Quantity, $data->Product_SlNo, $this->session->userdata('BRANCHid')]);
+            $checkReceived = $this->db->query("SELECT ci.* FROM tbl_currentinventory ci WHERE ci.product_id = ? AND ci.branch_id = ?", [$data->receivedProduct, $this->session->userdata('BRANCHid')])->row();
+            $checkExchange = $this->db->query("SELECT ci.* FROM tbl_currentinventory ci WHERE ci.product_id = ? AND ci.branch_id = ?", [$data->exchangeProduct, $this->session->userdata('BRANCHid')])->row();
+            if ($checkReceived) {
+                $this->db->query("
+                    update tbl_currentinventory ci 
+                    set ci.exchange_in_quantity = ci.exchange_in_quantity + ? 
+                    where product_id = ? 
+                    and ci.branch_id = ?
+                ", [$data->Received_Quantity, $data->receivedProduct, $this->session->userdata('BRANCHid')]);
+            } else {
+                $this->db->query("INSERT INTO tbl_currentinventory (product_id, exchange_in_quantity, branch_id) VALUES ('$data->receivedProduct', '$data->Received_Quantity', '$this->sbrunch')");
+            }
+            if ($checkExchange) {
+                $this->db->query("
+                    update tbl_currentinventory ci 
+                    set ci.exchange_out_quantity = ci.exchange_out_quantity - ? 
+                    where product_id = ? 
+                    and ci.branch_id = ?
+                ", [$data->Exchange_Quantity, $data->exchangeProduct, $this->session->userdata('BRANCHid')]);
+            } else {
+                $this->db->query("INSERT INTO tbl_currentinventory (product_id, exchange_out_quantity, branch_id) VALUES ('$data->exchangeProduct', '$data->Exchange_Quantity', '$this->sbrunch')");
+            }
 
             $res = ['success' => true, 'message' => 'Exchange entry success', 'newCode' => $this->mt->generateExchangeCode()];
         } catch (Exception $ex) {
@@ -2162,19 +2184,28 @@ class Sales extends CI_Controller
             $data = json_decode($this->input->raw_input_stream);
             $exchangeId = $data->Exchange_SlNo;
             //update current inventory
-            $oldProduct = $this->db->query("select * from tbl_salesexchange where Exchange_SlNo = ?", $exchangeId)->row();
+            $oldExchangeIn = $this->db->query("select * from tbl_salesexchange where Exchange_SlNo = ?", $exchangeId)->row();
             $this->db->query("
                 update tbl_currentinventory ci 
-                set ci.sales_return_quantity = ci.sales_return_quantity - ? 
+                set ci.exchange_in_quantity = ci.exchange_in_quantity - ? 
                 where product_id = ? 
                 and ci.branch_id = ?
-            ", [$oldProduct->Exchange_Quantity, $oldProduct->Product_SlNo, $this->session->userdata('BRANCHid')]);
+            ", [$oldExchangeIn->Received_Quantity, $oldExchangeIn->receivedProduct, $this->session->userdata('BRANCHid')]);
+
+            $this->db->query("
+                    update tbl_currentinventory ci 
+                    set ci.exchange_out_quantity = ci.exchange_out_quantity - ? 
+                    where product_id = ? 
+                    and ci.branch_id = ?
+                ", [$oldExchangeIn->Exchange_Quantity, $oldExchangeIn->exchangeProduct, $this->session->userdata('BRANCHid')]);
 
             $exchange = array(
                 'Exchange_Code'        => $data->Exchange_Code,
                 'Exchange_Date'        => $data->Exchange_Date,
                 'CustomerID'           => $data->CustomerID,
-                'Product_SlNo'         => $data->Product_SlNo,
+                'receivedProduct'      => $data->receivedProduct,
+                'Received_Quantity'    => $data->Received_Quantity,
+                'exchangeProduct'      => $data->exchangeProduct,
                 'Exchange_Quantity'    => $data->Exchange_Quantity,
                 'Exchange_Description' => $data->Exchange_Description,
                 'UpdateBy'             => $this->session->userdata("FullName"),
@@ -2183,12 +2214,28 @@ class Sales extends CI_Controller
 
             $this->db->where('Exchange_SlNo', $exchangeId)->update('tbl_salesexchange', $exchange);
 
-            $this->db->query("
-                update tbl_currentinventory ci 
-                set ci.sales_return_quantity = ci.sales_return_quantity + ? 
-                where product_id = ? 
-                and ci.branch_id = ?
-            ", [$data->Exchange_Quantity, $data->Product_SlNo, $this->session->userdata('BRANCHid')]);
+            $checkReceived = $this->db->query("SELECT ci.* FROM tbl_currentinventory ci WHERE ci.product_id = ? AND ci.branch_id = ?", [$data->receivedProduct, $this->session->userdata('BRANCHid')])->row();
+            $checkExchange = $this->db->query("SELECT ci.* FROM tbl_currentinventory ci WHERE ci.product_id = ? AND ci.branch_id = ?", [$data->exchangeProduct, $this->session->userdata('BRANCHid')])->row();
+            if ($checkReceived) {
+                $this->db->query("
+                    update tbl_currentinventory ci 
+                    set ci.exchange_in_quantity = ci.exchange_in_quantity + ? 
+                    where product_id = ? 
+                    and ci.branch_id = ?
+                ", [$data->Received_Quantity, $data->receivedProduct, $this->session->userdata('BRANCHid')]);
+            } else {
+                $this->db->query("INSERT INTO tbl_currentinventory (product_id, exchange_in_quantity, branch_id) VALUES ('$data->receivedProduct', '$data->Received_Quantity', '$this->sbrunch')");
+            }
+            if ($checkExchange) {
+                $this->db->query("
+                    update tbl_currentinventory ci 
+                    set ci.exchange_out_quantity = ci.exchange_out_quantity + ? 
+                    where product_id = ? 
+                    and ci.branch_id = ?
+                ", [$data->Exchange_Quantity, $data->exchangeProduct, $this->session->userdata('BRANCHid')]);
+            } else {
+                $this->db->query("INSERT INTO tbl_currentinventory (product_id, exchange_out_quantity, branch_id) VALUES ('$data->exchangeProduct', '$data->Exchange_Quantity', '$this->sbrunch')");
+            }
 
             $res = ['success' => true, 'message' => 'Exchange updated successfully', 'newCode' => $this->mt->generateExchangeCode()];
         } catch (Exception $ex) {
@@ -2208,10 +2255,16 @@ class Sales extends CI_Controller
             $oldProduct = $this->db->query("select * from tbl_salesexchange where Exchange_SlNo = ?", $exchangeId)->row();
             $this->db->query("
                 update tbl_currentinventory ci 
-                set ci.sales_return_quantity = ci.sales_return_quantity - ? 
+                set ci.exchange_in_quantity = ci.exchange_in_quantity - ? 
                 where product_id = ? 
                 and ci.branch_id = ?
-            ", [$oldProduct->Exchange_Quantity, $oldProduct->Product_SlNo, $this->session->userdata('BRANCHid')]);
+            ", [$oldProduct->Received_Quantity, $oldProduct->receivedProduct, $this->session->userdata('BRANCHid')]);
+            $this->db->query("
+                update tbl_currentinventory ci 
+                set ci.exchange_out_quantity = ci.exchange_out_quantity - ? 
+                where product_id = ? 
+                and ci.branch_id = ?
+            ", [$oldProduct->Exchange_Quantity, $oldProduct->exchangeProduct, $this->session->userdata('BRANCHid')]);
 
             $this->db->where('Exchange_SlNo', $exchangeId)->update('tbl_salesexchange', ['Status' => 'd']);
 
