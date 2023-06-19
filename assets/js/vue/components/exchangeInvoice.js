@@ -73,6 +73,11 @@ const exchangeInvoice = Vue.component("exchange-invoice", {
                           </table>
                       </div>
                   </div>
+                  <div class="row" style="margin-top:25px;">
+                    <div class="col-xs-6">
+                        <span style="font-weight:800;">Note:</span> {{exchanges.Exchange_Description}}                    
+                    </div>
+                  </div>
               </div>
           </div>
       `,
