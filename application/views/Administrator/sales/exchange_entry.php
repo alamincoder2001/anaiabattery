@@ -142,6 +142,7 @@
                             <td>{{ row.Exchange_Description }}</td>
                             <td>
                                 <?php if ($this->session->userdata('accountType') != 'u') { ?>
+                                    <a href="" title="Exchange Invoice" v-bind:href="`/sale_exchange_print/${row.Exchange_SlNo}`" target="_blank"><i class="fa fa-file"></i></a>
                                     <button type="button" class="button edit" @click="editExchange(row)">
                                         <i class="fa fa-pencil"></i>
                                     </button>

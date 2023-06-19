@@ -1565,6 +1565,13 @@ class Sales extends CI_Controller
         $data['content'] = $this->load->view('Administrator/sales/sellAndreport', $data, TRUE);
         $this->load->view('Administrator/index', $data);
     }
+    public function exchangeInvoicePrint($exchangeId)
+    {
+        $data['title'] = "Exchange Invoice";
+        $data['exchangeId'] = $exchangeId;
+        $data['content'] = $this->load->view('Administrator/sales/exchangeAndreport', $data, TRUE);
+        $this->load->view('Administrator/index', $data);
+    }
     function return_list()
     {
         $access = $this->mt->userAccess();
@@ -2103,7 +2110,7 @@ class Sales extends CI_Controller
 
         $clauses = "";
         if (isset($data->exchangeId) && $data->exchangeId != '') {
-            $clauses .= " and d.Product_SlNo = '$data->exchangeId'";
+            $clauses .= " and ex.Exchange_SlNo = '$data->exchangeId'";
         }
         $exchanges = $this->db->query("
                         SELECT
@@ -2112,7 +2119,10 @@ class Sales extends CI_Controller
                         rcx.Product_Name as receivedProductName,
                         tcx.Product_Code as exchangeProductCode,
                         tcx.Product_Name as exchangeProductName,
+                        c.Customer_Code,
                         c.Customer_Name,
+                        c.Customer_Address,
+                        c.Customer_Mobile,
                         concat(c.Customer_Code, ' - ', c.Customer_Name, ' - ', c.owner_name) as display_name
                     FROM tbl_salesexchange ex
                     LEFT JOIN tbl_product rcx ON rcx.Product_SlNo = ex.receivedProduct

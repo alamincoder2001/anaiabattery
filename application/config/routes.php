@@ -277,6 +277,7 @@ $route['get_serial_report'] = 'Administrator/Sales/getSerialReport';
 
 
 $route['sale_invoice_print/(:any)'] = 'Administrator/Sales/saleInvoicePrint/$1';
+$route['sale_exchange_print/(:any)'] = 'Administrator/Sales/exchangeInvoicePrint/$1';
 $route['serviceInvoicePrint/(:any)'] = 'Administrator/Services/serviceInvoicePrint/$1';
 $route['craditlimit'] = 'Administrator/Sales/craditlimit/';
 $route['salesrecord'] = 'Administrator/Sales/sales_record';   
