@@ -1049,7 +1049,7 @@
 					if (conf) {
 						let r = res.data;
 						if (r.success) {
-							let conf = confirm('Sale success, Do you want to view invoice?');
+							let conf = confirm(`${r.message}, Do you want to view invoice?`);
 							if (conf) {
 								window.open('/sale_invoice_print/' + r.salesId, '_blank');
 								await new Promise(r => setTimeout(r, 1000));
