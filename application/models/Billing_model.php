@@ -495,12 +495,12 @@ class Billing_model extends CI_Model {
 		$companyInfo = $this->db->query("select * from tbl_company order by Company_SlNo desc limit 1")->row();
 		$currentBranch = $this->db->query("select * from tbl_brunch where brunch_id = ?", $this->session->userdata("BRANCHid"))->row();
 		$companyInfo = [
-			'Company_Name' => $currentBranch->Brunch_name,
-			'Repot_Heading' => $companyInfo->Repot_Heading,
-			'Company_Logo_org' => $companyInfo->Company_Logo_org,
+			'Company_Name'      => $currentBranch->Brunch_name,
+			'Repot_Heading'     => $companyInfo->Repot_Heading,
+			'Company_Logo_org'  => $companyInfo->Company_Logo_org,
 			'Company_Logo_thum' => $companyInfo->Company_Logo_thum,
-			'Invoice_Type' => $companyInfo->Invoice_Type,
-			'print_type' => $companyInfo->print_type
+			'Invoice_Type'      => $companyInfo->Invoice_Type,
+			'print_type'        => $companyInfo->print_type
 		];
 
 		return $companyInfo;

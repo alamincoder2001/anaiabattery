@@ -11,7 +11,7 @@
                 <div class="row">
                     <div class="col-xs-12 text-center">
                         <div _h098asdh>
-                        Delivery Chalan
+                            Delivery Chalan
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                                     <td style="text-align:right">Total Qty : </td>
                                     <td>{{cart.reduce((prev,cur)=>{
 				                  return prev+parseFloat(cur.SaleDetails_TotalQuantity)},0) }}</td>
-                                
+
                                 </tr>
                             </tbody>
                         </table>
@@ -77,7 +77,7 @@
         data() {
             return {
                 sales: {
-                    SaleMaster_SlNo: parseInt('<?php echo $saleId;?>'),
+                    SaleMaster_SlNo: parseInt('<?php echo $saleId; ?>'),
                     SaleMaster_InvoiceNo: null,
                     SalseCustomer_IDNo: null,
                     SaleMaster_SaleDate: null,
@@ -172,6 +172,14 @@
 								${document.querySelector('#invoiceContent').innerHTML}
 							</div>
 						</div>
+                        <div class="row" style="margin-bottom:5px;margin-top:80px;padding-bottom:6px;">
+                            <div class="col-xs-6">
+                                <span style="text-decoration:overline;">Received by</span>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <span style="text-decoration:overline;">Authorized by</span>
+                            </div>
+                        </div>
 					</div>
 				`;
 

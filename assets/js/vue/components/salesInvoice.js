@@ -452,18 +452,10 @@ const salesInvoice = Vue.component("sales-invoice", {
                                       <tr>
                                           <td>
                                               <div class="row">
-                                                  <div class="col-xs-2"><img src="${location.origin+"/uploads/company_profile_org/"+
-                                                    this.currentBranch.Company_Logo_org
-                                                  }" alt="Logo" style="height:80px;" /></div>
+                                                  <div class="col-xs-2"><img src="${"/uploads/company_profile_org/"+this.currentBranch.Company_Logo_org}" alt="Logo" style="height:80px;" /></div>
                                                   <div class="col-xs-10" style="padding-top:20px;text-align:center;">
-                                                      <strong style="font-size:18px;">${
-                                                        this.currentBranch
-                                                          .Company_Name
-                                                      }</strong><br>
-                                                      <p style="white-space:pre-line;">${
-                                                        this.currentBranch
-                                                          .Repot_Heading
-                                                      }</p>
+                                                      <strong style="font-size:18px;">${this.currentBranch.Company_Name}</strong><br>
+                                                      <p style="white-space:pre-line;">${this.currentBranch.Repot_Heading}</p>
                                                   </div>
                                               </div>
                                               <div class="row">
@@ -509,9 +501,6 @@ const salesInvoice = Vue.component("sales-invoice", {
                                             "DD-MM-YYYY h:mm a"
                                           )}, Printed by: ${this.sales.AddBy}
                                       </div>
-                                      <!-- <div class="col-xs-6 text-right">
-                                          Developed by: Link-Up Technologoy, Contact no: 01911978897
-                                      </div> -->
                                   </div>
                               </div>
                           </div>
