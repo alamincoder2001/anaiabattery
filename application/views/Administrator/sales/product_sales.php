@@ -170,10 +170,16 @@
 											</div>
 										</div>
 
-										<div class="form-group">
+										<div class="form-group" v-if="sales.salesType == 'retail'">
 											<label class="col-xs-3 control-label no-padding-right"> Sale Rate </label>
 											<div class="col-xs-9">
 												<input type="number" id="salesRate" placeholder="Rate" step="0.01" class="form-control" ref="rate" v-model="selectedProduct.Product_SellingPrice" v-on:input="productTotal" />
+											</div>
+										</div>
+										<div class="form-group" v-else>
+											<label class="col-xs-3 control-label no-padding-right"> Sale Rate </label>
+											<div class="col-xs-9">
+												<input type="number" id="salesRate" placeholder="Rate" step="0.01" class="form-control" ref="rate" v-model="selectedProduct.Product_WholesaleRate" v-on:input="productTotal" />
 											</div>
 										</div>
 										<div class="form-group">
