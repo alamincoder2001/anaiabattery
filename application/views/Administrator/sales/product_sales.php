@@ -748,7 +748,11 @@
 				})
 			},
 			productTotal() {
-				this.selectedProduct.total = (parseFloat(this.selectedProduct.quantity) * parseFloat(this.selectedProduct.Product_SellingPrice)).toFixed(2);
+				if (this.sales.salesType == 'retail') {
+					this.selectedProduct.total = (parseFloat(this.selectedProduct.quantity) * parseFloat(this.selectedProduct.Product_SellingPrice)).toFixed(2);
+				} else {
+					this.selectedProduct.total = (parseFloat(this.selectedProduct.quantity) * parseFloat(this.selectedProduct.Product_WholesaleRate)).toFixed(2);
+				}
 			},
 			productReturnTotal() {
 				this.selectedReturnProduct.total = (parseFloat(this.selectedReturnProduct.quantity) * parseFloat(this.selectedReturnProduct.Product_SellingPrice)).toFixed(2);
@@ -838,7 +842,7 @@
 					productCode: this.selectedProduct.Product_Code,
 					categoryName: this.selectedProduct.ProductCategory_Name,
 					name: this.selectedProduct.Product_Name,
-					salesRate: this.selectedProduct.Product_SellingPrice,
+					salesRate: this.sales.salesType == 'retial' ? this.selectedProduct.Product_SellingPrice : this.selectedProduct.Product_WholesaleRate,
 					vat: this.selectedProduct.vat,
 					quantity: this.selectedProduct.quantity,
 					total: this.selectedProduct.total,
@@ -983,7 +987,7 @@
 				this.sales.total = (sTotal - returnAmount).toFixed(2)
 
 				if (this.selectedCustomer.Customer_Type == 'G') {
-					this.sales.paid = this.sales.total ;
+					this.sales.paid = this.sales.total;
 					this.sales.due = 0;
 				} else {
 					if (event.target.id != 'paid') {
@@ -1049,7 +1053,7 @@
 					data.customer = this.selectedCustomer;
 				}
 
-				
+
 				axios.post(url, data).then(async res => {
 					let conf = confirm('Are you sure to save sale?');
 					if (conf) {
@@ -1125,7 +1129,7 @@
 							name: product.Product_Name,
 							salesRate: product.SaleDetails_Rate,
 							vat: product.SaleDetails_Tax,
-							quantity: product.SaleDetails_TotalQuantity, 
+							quantity: product.SaleDetails_TotalQuantity,
 							total: product.SaleDetails_TotalAmount,
 							purchaseRate: product.Purchase_Rate,
 						}
